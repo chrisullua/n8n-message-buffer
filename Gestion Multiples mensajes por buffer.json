@@ -1,419 +1,419 @@
-{
-  "name": "Gestion Multiples mensajes por buffer",
-  "nodes": [
-    {
-      "parameters": {
-        "updates": [
-          "messages"
+  {
+    "name": "Gestion Multiples mensajes por buffer",
+    "nodes": [
+      {
+        "parameters": {
+          "updates": [
+            "messages"
+          ],
+          "options": {
+            "messageStatusUpdates": []
+          }
+        },
+        "type": "n8n-nodes-base.whatsAppTrigger",
+        "typeVersion": 1,
+        "position": [
+          144,
+          0
         ],
-        "options": {
-          "messageStatusUpdates": []
+        "id": "93e5e9ed-1192-4151-9a72-f28f1884e0f0",
+        "name": "WhatsApp Trigger",
+        "webhookId": "[REDACTED_WEBHOOK_ID]",
+        "credentials": {
+          "whatsAppTriggerApi": {
+            "id": "[REDACTED_CREDENTIAL_ID]",
+            "name": "WhatsApp OAuth account"
+          }
         }
       },
-      "type": "n8n-nodes-base.whatsAppTrigger",
-      "typeVersion": 1,
-      "position": [
-        144,
-        0
-      ],
-      "id": "93e5e9ed-1192-4151-9a72-f28f1884e0f0",
-      "name": "WhatsApp Trigger",
-      "webhookId": "efa92b47-2bbf-4a02-81b3-45e953176473",
-      "credentials": {
-        "whatsAppTriggerApi": {
-          "id": "izs5cJiRvwxU1lfa",
-          "name": "WhatsApp OAuth account"
-        }
+      {
+        "parameters": {
+          "dataTableId": {
+            "__rl": true,
+            "value": "[REDACTED_DATATABLE_ID]",
+            "mode": "list",
+            "cachedResultName": "buffer_mensajes",
+            "cachedResultUrl": "[REDACTED_DATATABLE_URL]"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "user_id": "={{ $json.contacts[0].user_id }}",
+              "texto_mensaje": "={{ $json.messages[0].text.body }}",
+              "processed": false
+            },
+            "matchingColumns": [
+              "texto_mensaje"
+            ],
+            "schema": [
+              {
+                "id": "user_id",
+                "displayName": "user_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "texto_mensaje",
+                "displayName": "texto_mensaje",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "processed",
+                "displayName": "processed",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "boolean",
+                "readOnly": false,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1,
+        "position": [
+          320,
+          0
+        ],
+        "id": "bc8731c5-0bc7-4580-8739-c7a3520cb73b",
+        "name": "Guardar mensaje"
+      },
+      {
+        "parameters": {
+          "amount": 15
+        },
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          480,
+          0
+        ],
+        "id": "4ded6a54-6cb7-4080-8fb7-252618f5d44a",
+        "name": "Esperar 15'",
+        "webhookId": "[REDACTED_WEBHOOK_ID]"
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "dataTableId": {
+            "__rl": true,
+            "value": "[REDACTED_DATATABLE_ID]",
+            "mode": "list",
+            "cachedResultName": "buffer_mensajes",
+            "cachedResultUrl": "[REDACTED_DATATABLE_URL]"
+          },
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "user_id",
+                "keyValue": "={{ $json.user_id }}"
+              },
+              {
+                "keyName": "processed",
+                "condition": "isFalse"
+              }
+            ]
+          },
+          "limit": 1,
+          "orderBy": true,
+          "orderByColumn": "updatedAt"
+        },
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1,
+        "position": [
+          640,
+          0
+        ],
+        "id": "08dc5456-659d-4e02-97e3-6ee582332363",
+        "name": "Recuperar ultimo mensaje guardado"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "e9b14e50-8e59-4c46-ae93-2e54f32833db",
+                "leftValue": "={{ $('Esperar 15\\'').item.json.id }}",
+                "rightValue": "={{ $json.id }}",
+                "operator": {
+                  "type": "number",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          816,
+          0
+        ],
+        "id": "94c6d91a-3bc6-4cf7-a754-9066eb48de09",
+        "name": "Es este mensaje el último recibido?"
+      },
+      {
+        "parameters": {
+          "operation": "get",
+          "dataTableId": {
+            "__rl": true,
+            "value": "[REDACTED_DATATABLE_ID]",
+            "mode": "list",
+            "cachedResultName": "buffer_mensajes",
+            "cachedResultUrl": "[REDACTED_DATATABLE_URL]"
+          },
+          "matchType": "allConditions",
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "user_id",
+                "keyValue": "={{ $json.user_id }}"
+              },
+              {
+                "keyName": "processed",
+                "condition": "isFalse"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1,
+        "position": [
+          1072,
+          -112
+        ],
+        "id": "14b883ad-4388-453c-9610-195a49f4a73a",
+        "name": "Recuperar todos los mensajes"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "dataTableId": {
+            "__rl": true,
+            "value": "[REDACTED_DATATABLE_ID]",
+            "mode": "list",
+            "cachedResultName": "buffer_mensajes",
+            "cachedResultUrl": "[REDACTED_DATATABLE_URL]"
+          },
+          "filters": {
+            "conditions": [
+              {
+                "keyValue": "={{ $json.id }}"
+              }
+            ]
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "processed": true
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "user_id",
+                "displayName": "user_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "texto_mensaje",
+                "displayName": "texto_mensaje",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "readOnly": false,
+                "removed": false
+              },
+              {
+                "id": "processed",
+                "displayName": "processed",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "boolean",
+                "readOnly": false,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1,
+        "position": [
+          1280,
+          -112
+        ],
+        "id": "5e1a6fc0-0672-4573-b637-454291564801",
+        "name": "Validar procesamiento"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "73ee2457-b111-42b7-bdef-641263c68329",
+                "name": "=mensaje ",
+                "value": "={{ $json.texto_mensaje }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1488,
+          -112
+        ],
+        "id": "93a8f701-28d4-48b6-89c6-3be21fe540b5",
+        "name": "Extraer mensajes"
+      },
+      {
+        "parameters": {
+          "aggregate": "aggregateAllItemData",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          1664,
+          -112
+        ],
+        "id": "9cb746c7-7389-4c8b-a6be-506c300a7c47",
+        "name": "Juntar mensajes"
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "WhatsApp Trigger": {
+        "main": [
+          [
+            {
+              "node": "Guardar mensaje",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Guardar mensaje": {
+        "main": [
+          [
+            {
+              "node": "Esperar 15'",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Esperar 15'": {
+        "main": [
+          [
+            {
+              "node": "Recuperar ultimo mensaje guardado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Recuperar ultimo mensaje guardado": {
+        "main": [
+          [
+            {
+              "node": "Es este mensaje el último recibido?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Es este mensaje el último recibido?": {
+        "main": [
+          [
+            {
+              "node": "Recuperar todos los mensajes",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Recuperar todos los mensajes": {
+        "main": [
+          [
+            {
+              "node": "Validar procesamiento",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validar procesamiento": {
+        "main": [
+          [
+            {
+              "node": "Extraer mensajes",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extraer mensajes": {
+        "main": [
+          [
+            {
+              "node": "Juntar mensajes",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
       }
     },
-    {
-      "parameters": {
-        "dataTableId": {
-          "__rl": true,
-          "value": "yUy5HodReTpJFo4Q",
-          "mode": "list",
-          "cachedResultName": "buffer_mensajes",
-          "cachedResultUrl": "/projects/SQ47R5UnCawGY2rZ/datatables/yUy5HodReTpJFo4Q"
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "user_id": "={{ $json.contacts[0].user_id }}",
-            "texto_mensaje": "={{ $json.messages[0].text.body }}",
-            "processed": false
-          },
-          "matchingColumns": [
-            "texto_mensaje"
-          ],
-          "schema": [
-            {
-              "id": "user_id",
-              "displayName": "user_id",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "readOnly": false,
-              "removed": false
-            },
-            {
-              "id": "texto_mensaje",
-              "displayName": "texto_mensaje",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "readOnly": false,
-              "removed": false
-            },
-            {
-              "id": "processed",
-              "displayName": "processed",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "boolean",
-              "readOnly": false,
-              "removed": false
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.dataTable",
-      "typeVersion": 1.1,
-      "position": [
-        320,
-        0
-      ],
-      "id": "bc8731c5-0bc7-4580-8739-c7a3520cb73b",
-      "name": "Guardar mensaje"
+    "active": true,
+    "settings": {
+      "executionOrder": "v1",
+      "binaryMode": "separate"
     },
-    {
-      "parameters": {
-        "amount": 15
-      },
-      "type": "n8n-nodes-base.wait",
-      "typeVersion": 1.1,
-      "position": [
-        480,
-        0
-      ],
-      "id": "4ded6a54-6cb7-4080-8fb7-252618f5d44a",
-      "name": "Esperar 15'",
-      "webhookId": "2c17ae0d-34d6-43a2-82d8-67889e7543d6"
+    "versionId": "[REDACTED_VERSION_ID]",
+    "meta": {
+      "templateCredsSetupCompleted": true,
+      "instanceId": "[REDACTED_INSTANCE_ID]"
     },
-    {
-      "parameters": {
-        "operation": "get",
-        "dataTableId": {
-          "__rl": true,
-          "value": "yUy5HodReTpJFo4Q",
-          "mode": "list",
-          "cachedResultName": "buffer_mensajes",
-          "cachedResultUrl": "/projects/SQ47R5UnCawGY2rZ/datatables/yUy5HodReTpJFo4Q"
-        },
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "user_id",
-              "keyValue": "={{ $json.user_id }}"
-            },
-            {
-              "keyName": "processed",
-              "condition": "isFalse"
-            }
-          ]
-        },
-        "limit": 1,
-        "orderBy": true,
-        "orderByColumn": "updatedAt"
-      },
-      "type": "n8n-nodes-base.dataTable",
-      "typeVersion": 1.1,
-      "position": [
-        640,
-        0
-      ],
-      "id": "08dc5456-659d-4e02-97e3-6ee582332363",
-      "name": "Recuperar ultimo mensaje guardado"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 3
-          },
-          "conditions": [
-            {
-              "id": "e9b14e50-8e59-4c46-ae93-2e54f32833db",
-              "leftValue": "={{ $('Esperar 15\\'').item.json.id }}",
-              "rightValue": "={{ $json.id }}",
-              "operator": {
-                "type": "number",
-                "operation": "equals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.3,
-      "position": [
-        816,
-        0
-      ],
-      "id": "94c6d91a-3bc6-4cf7-a754-9066eb48de09",
-      "name": "Es este mensaje el último recibido?"
-    },
-    {
-      "parameters": {
-        "operation": "get",
-        "dataTableId": {
-          "__rl": true,
-          "value": "yUy5HodReTpJFo4Q",
-          "mode": "list",
-          "cachedResultName": "buffer_mensajes",
-          "cachedResultUrl": "/projects/SQ47R5UnCawGY2rZ/datatables/yUy5HodReTpJFo4Q"
-        },
-        "matchType": "allConditions",
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "user_id",
-              "keyValue": "={{ $json.user_id }}"
-            },
-            {
-              "keyName": "processed",
-              "condition": "isFalse"
-            }
-          ]
-        }
-      },
-      "type": "n8n-nodes-base.dataTable",
-      "typeVersion": 1.1,
-      "position": [
-        1072,
-        -112
-      ],
-      "id": "14b883ad-4388-453c-9610-195a49f4a73a",
-      "name": "Recuperar todos los mensajes"
-    },
-    {
-      "parameters": {
-        "operation": "update",
-        "dataTableId": {
-          "__rl": true,
-          "value": "yUy5HodReTpJFo4Q",
-          "mode": "list",
-          "cachedResultName": "buffer_mensajes",
-          "cachedResultUrl": "/projects/SQ47R5UnCawGY2rZ/datatables/yUy5HodReTpJFo4Q"
-        },
-        "filters": {
-          "conditions": [
-            {
-              "keyValue": "={{ $json.id }}"
-            }
-          ]
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "processed": true
-          },
-          "matchingColumns": [],
-          "schema": [
-            {
-              "id": "user_id",
-              "displayName": "user_id",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "readOnly": false,
-              "removed": false
-            },
-            {
-              "id": "texto_mensaje",
-              "displayName": "texto_mensaje",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "readOnly": false,
-              "removed": false
-            },
-            {
-              "id": "processed",
-              "displayName": "processed",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "boolean",
-              "readOnly": false,
-              "removed": false
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.dataTable",
-      "typeVersion": 1.1,
-      "position": [
-        1280,
-        -112
-      ],
-      "id": "5e1a6fc0-0672-4573-b637-454291564801",
-      "name": "Validar procesamiento"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "73ee2457-b111-42b7-bdef-641263c68329",
-              "name": "=mensaje ",
-              "value": "={{ $json.texto_mensaje }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        1488,
-        -112
-      ],
-      "id": "93a8f701-28d4-48b6-89c6-3be21fe540b5",
-      "name": "Extraer mensajes"
-    },
-    {
-      "parameters": {
-        "aggregate": "aggregateAllItemData",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.aggregate",
-      "typeVersion": 1,
-      "position": [
-        1664,
-        -112
-      ],
-      "id": "9cb746c7-7389-4c8b-a6be-506c300a7c47",
-      "name": "Juntar mensajes"
-    }
-  ],
-  "pinData": {},
-  "connections": {
-    "WhatsApp Trigger": {
-      "main": [
-        [
-          {
-            "node": "Guardar mensaje",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Guardar mensaje": {
-      "main": [
-        [
-          {
-            "node": "Esperar 15'",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Esperar 15'": {
-      "main": [
-        [
-          {
-            "node": "Recuperar ultimo mensaje guardado",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Recuperar ultimo mensaje guardado": {
-      "main": [
-        [
-          {
-            "node": "Es este mensaje el último recibido?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Es este mensaje el último recibido?": {
-      "main": [
-        [
-          {
-            "node": "Recuperar todos los mensajes",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Recuperar todos los mensajes": {
-      "main": [
-        [
-          {
-            "node": "Validar procesamiento",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Validar procesamiento": {
-      "main": [
-        [
-          {
-            "node": "Extraer mensajes",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Extraer mensajes": {
-      "main": [
-        [
-          {
-            "node": "Juntar mensajes",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    }
-  },
-  "active": true,
-  "settings": {
-    "executionOrder": "v1",
-    "binaryMode": "separate"
-  },
-  "versionId": "7e8bbd7a-d72e-4ff9-9c76-f65aa07a0c31",
-  "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "eb39d68400cd24d1dad26647d197293d822fbb5885f4be435aa7496d4048e494"
-  },
-  "id": "W8GLIWIFmU64kuh3",
-  "tags": []
-}
+    "id": "W8GLIWIFmU64kuh3",
+    "tags": []
+  }
