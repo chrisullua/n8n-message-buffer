@@ -1,419 +1,943 @@
-  {
-    "name": "Gestion Multiples mensajes por buffer",
-    "nodes": [
-      {
-        "parameters": {
-          "updates": [
-            "messages"
-          ],
-          "options": {
-            "messageStatusUpdates": []
-          }
-        },
-        "type": "n8n-nodes-base.whatsAppTrigger",
-        "typeVersion": 1,
-        "position": [
-          144,
-          0
+{
+  "name": "WhatsApp Message Buffer",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "messages"
         ],
-        "id": "93e5e9ed-1192-4151-9a72-f28f1884e0f0",
-        "name": "WhatsApp Trigger",
-        "webhookId": "[REDACTED_WEBHOOK_ID]",
-        "credentials": {
-          "whatsAppTriggerApi": {
-            "id": "[REDACTED_CREDENTIAL_ID]",
-            "name": "WhatsApp OAuth account"
-          }
+        "options": {
+          "messageStatusUpdates": []
         }
       },
-      {
-        "parameters": {
-          "dataTableId": {
-            "__rl": true,
-            "value": "[REDACTED_DATATABLE_ID]",
-            "mode": "list",
-            "cachedResultName": "buffer_mensajes",
-            "cachedResultUrl": "[REDACTED_DATATABLE_URL]"
-          },
-          "columns": {
-            "mappingMode": "defineBelow",
-            "value": {
-              "user_id": "={{ $json.contacts[0].user_id }}",
-              "texto_mensaje": "={{ $json.messages[0].text.body }}",
-              "processed": false
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1856,
+        16
+      ],
+      "id": "6adbad56-f242-4bcd-a66d-882e5f834890",
+      "name": "WhatsApp Trigger",
+      "webhookId": "[REDACTED_WEBHOOK_ID]",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "[REDACTED_CREDENTIAL_ID]",
+          "name": "WhatsApp OAuth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.messages[0].type }}",
+                    "rightValue": "text",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "4462581b-8974-44c6-9b7d-fc3b66b142dd"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "text context"
             },
-            "matchingColumns": [
-              "texto_mensaje"
-            ],
-            "schema": [
-              {
-                "id": "user_id",
-                "displayName": "user_id",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "readOnly": false,
-                "removed": false
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "40426e46-8c32-4e6b-ac58-aae8f85c6c02",
+                    "leftValue": "={{ $json.messages[0].type }}",
+                    "rightValue": "image",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
               },
-              {
-                "id": "texto_mensaje",
-                "displayName": "texto_mensaje",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "readOnly": false,
-                "removed": false
-              },
-              {
-                "id": "processed",
-                "displayName": "processed",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "boolean",
-                "readOnly": false,
-                "removed": false
-              }
-            ],
-            "attemptToConvertTypes": false,
-            "convertFieldsToString": false
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.dataTable",
-        "typeVersion": 1.1,
-        "position": [
-          320,
-          0
-        ],
-        "id": "bc8731c5-0bc7-4580-8739-c7a3520cb73b",
-        "name": "Guardar mensaje"
-      },
-      {
-        "parameters": {
-          "amount": 15
-        },
-        "type": "n8n-nodes-base.wait",
-        "typeVersion": 1.1,
-        "position": [
-          480,
-          0
-        ],
-        "id": "4ded6a54-6cb7-4080-8fb7-252618f5d44a",
-        "name": "Esperar 15'",
-        "webhookId": "[REDACTED_WEBHOOK_ID]"
-      },
-      {
-        "parameters": {
-          "operation": "get",
-          "dataTableId": {
-            "__rl": true,
-            "value": "[REDACTED_DATATABLE_ID]",
-            "mode": "list",
-            "cachedResultName": "buffer_mensajes",
-            "cachedResultUrl": "[REDACTED_DATATABLE_URL]"
-          },
-          "filters": {
-            "conditions": [
-              {
-                "keyName": "user_id",
-                "keyValue": "={{ $json.user_id }}"
-              },
-              {
-                "keyName": "processed",
-                "condition": "isFalse"
-              }
-            ]
-          },
-          "limit": 1,
-          "orderBy": true,
-          "orderByColumn": "updatedAt"
-        },
-        "type": "n8n-nodes-base.dataTable",
-        "typeVersion": 1.1,
-        "position": [
-          640,
-          0
-        ],
-        "id": "08dc5456-659d-4e02-97e3-6ee582332363",
-        "name": "Recuperar ultimo mensaje guardado"
-      },
-      {
-        "parameters": {
-          "conditions": {
-            "options": {
-              "caseSensitive": true,
-              "leftValue": "",
-              "typeValidation": "strict",
-              "version": 3
+              "renameOutput": true,
+              "outputKey": "image context"
             },
-            "conditions": [
-              {
-                "id": "e9b14e50-8e59-4c46-ae93-2e54f32833db",
-                "leftValue": "={{ $('Esperar 15\\'').item.json.id }}",
-                "rightValue": "={{ $json.id }}",
-                "operator": {
-                  "type": "number",
-                  "operation": "equals"
-                }
-              }
-            ],
-            "combinator": "and"
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.if",
-        "typeVersion": 2.3,
-        "position": [
-          816,
-          0
-        ],
-        "id": "94c6d91a-3bc6-4cf7-a754-9066eb48de09",
-        "name": "Es este mensaje el último recibido?"
-      },
-      {
-        "parameters": {
-          "operation": "get",
-          "dataTableId": {
-            "__rl": true,
-            "value": "[REDACTED_DATATABLE_ID]",
-            "mode": "list",
-            "cachedResultName": "buffer_mensajes",
-            "cachedResultUrl": "[REDACTED_DATATABLE_URL]"
-          },
-          "matchType": "allConditions",
-          "filters": {
-            "conditions": [
-              {
-                "keyName": "user_id",
-                "keyValue": "={{ $json.user_id }}"
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "4969b4b8-616e-4c06-8b61-90e44881bdcc",
+                    "leftValue": "={{ $json.messages[0].type }}",
+                    "rightValue": "audio",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
               },
-              {
-                "keyName": "processed",
-                "condition": "isFalse"
+              "renameOutput": true,
+              "outputKey": "audio context"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -1680,
+        -16
+      ],
+      "id": "9305216a-89c7-4476-ab48-f2f52dc2d7f0",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -784,
+        0
+      ],
+      "id": "ddf3b393-8f18-492c-9dfc-609d9ca5feb5",
+      "name": "Wait",
+      "webhookId": "[REDACTED_WEBHOOK_ID]"
+    },
+    {
+      "parameters": {
+        "content": "## Wait node\n\n_This node causes a pause while waiting for new incoming messages.\nThe longer this pause is, the longer the process may take._\n**It is currently configured to wait 15 seconds.**",
+        "height": 352,
+        "width": 224,
+        "color": "#902787"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -848,
+        -208
+      ],
+      "id": "10d67b7a-3c8f-4d62-a96f-77ad11fa3681",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Validation\n\n_Verify if the message that triggered the workflow is in fact the last message saved in the data table._\n\n**If the result is false, we do nothing.**",
+        "height": 352,
+        "width": 224,
+        "color": "#204626"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        -208
+      ],
+      "id": "bc09d8fb-7548-407f-84c2-1a83aab68d6b",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Mark messages as processed\n\n_We mark the messages as processed to avoid processing them again in subsequent executions._\n\n",
+        "height": 352,
+        "width": 224
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        112,
+        -208
+      ],
+      "id": "37881c21-9989-4e1e-a7e8-e5fa4c3ee0cc",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "[REDACTED_DATATABLE_ID]",
+          "mode": "list",
+          "cachedResultName": "message_buffer",
+          "cachedResultUrl": "[REDACTED_DATATABLE_URL]"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "processed": false,
+            "user_id": "={{ $json.user_id }}",
+            "message_type": "={{ $json.message_type }}",
+            "value": "={{ $json.value }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "user_id",
+              "displayName": "user_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "processed",
+              "displayName": "processed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "message_type",
+              "displayName": "message_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "value",
+              "displayName": "value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -1024,
+        0
+      ],
+      "id": "001af3a7-e71e-4633-b860-c6d299909bda",
+      "name": "Save message"
+    },
+    {
+      "parameters": {
+        "content": "## Capture the message information\n\n_We are using n8n's data tables._\n\n",
+        "height": 352,
+        "width": 224
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1088,
+        -208
+      ],
+      "id": "454439b7-db48-45f0-8eb7-ff80c7a592fb",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "[REDACTED_DATATABLE_ID]",
+          "mode": "list",
+          "cachedResultName": "message_buffer",
+          "cachedResultUrl": "[REDACTED_DATATABLE_URL]"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "user_id",
+              "keyValue": "={{ $json.user_id }}"
+            },
+            {
+              "keyName": "processed",
+              "condition": "isFalse"
+            }
+          ]
+        },
+        "limit": 1,
+        "orderBy": true,
+        "orderByColumn": "updatedAt"
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -544,
+        0
+      ],
+      "id": "cd0c67b6-4760-4f09-9d75-d2c52e095c4e",
+      "name": "Retrieve last message"
+    },
+    {
+      "parameters": {
+        "content": "## Search in the data table\n\n_Find the last message saved in the database._\n\n",
+        "height": 352,
+        "width": 224
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -608,
+        -208
+      ],
+      "id": "be7546cd-7094-42bd-ba1c-2a4064cfa54a",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## Search in the data table\n\n_Find all messages marked as \"unprocessed\"._\n\n**configured limit = 50.**",
+        "height": 352,
+        "width": 224
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        -208
+      ],
+      "id": "b7225f88-1b1d-434c-b473-c079e1627498",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "[REDACTED_DATATABLE_ID]",
+          "mode": "list",
+          "cachedResultName": "message_buffer",
+          "cachedResultUrl": "[REDACTED_DATATABLE_URL]"
+        },
+        "matchType": "=allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "user_id",
+              "keyValue": "={{ $json.user_id }}"
+            },
+            {
+              "keyName": "processed",
+              "condition": "isFalse"
+            }
+          ]
+        },
+        "orderBy": true,
+        "orderByDirection": "ASC"
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -64,
+        -16
+      ],
+      "id": "df2e25a9-4b59-4af7-b1ac-39bb566c077f",
+      "name": "Retrieve all saved messages"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "[REDACTED_DATATABLE_ID]",
+          "mode": "list",
+          "cachedResultName": "message_buffer",
+          "cachedResultUrl": "[REDACTED_DATATABLE_URL]"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $json.id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "processed": true
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "user_id",
+              "displayName": "user_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "processed",
+              "displayName": "processed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "message_type",
+              "displayName": "message_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "value",
+              "displayName": "value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        176,
+        -16
+      ],
+      "id": "9750482d-fd16-458a-8db5-154ba5167646",
+      "name": "validate processing"
+    },
+    {
+      "parameters": {
+        "content": "## Extract and unify\n\n_Extract the required information (type and value) from each message, then consolidate it into an array.\nFinally, add the `user_id` to identify who sent those messages._",
+        "height": 352,
+        "width": 560,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        352,
+        -208
+      ],
+      "id": "2de43faa-72e7-4ddb-9161-b3750ebe0e8e",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "73ee2457-b111-42b7-bdef-641263c68329",
+              "name": "=value",
+              "value": "={{ $json.value }}",
+              "type": "string"
+            },
+            {
+              "id": "eb0e6a61-69c5-4175-adee-d50d90191902",
+              "name": "message_type",
+              "value": "={{ $json.message_type }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        -16
+      ],
+      "id": "9a97ac37-2215-4b65-8f39-d73cf32b2a5e",
+      "name": "Extract messages in buffer"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "messages_array",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        576,
+        -16
+      ],
+      "id": "fcc2b31e-e089-4cbc-b8c3-25807a64c945",
+      "name": "Unify"
+    },
+    {
+      "parameters": {
+        "content": "## Set node\n\n_To extract and name the necessary fields from a WhatsApp message._\n\n* user_id\n* message_type\n* value",
+        "height": 608,
+        "width": 304,
+        "color": "#2E1849"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1456,
+        -304
+      ],
+      "id": "4b4eafd0-3569-4007-9eb5-27e356cecedf",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "errorMessage": "This workflow only supports WhatsApp messages of the text, image, or audio type. To process messages of other types, you must add the corresponding logic."
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        -1680,
+        336
+      ],
+      "id": "6f066fd7-aacf-43a1-823e-dcb2139042f6",
+      "name": "Stop and Error"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1712,
+        320
+      ],
+      "id": "4500d8f6-6e67-4189-a37c-f7197df60da9",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "## Message format error.\n_This workflow only works with WhatsApp messages of the text, image, or audio type._",
+        "width": 224,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1552,
+        320
+      ],
+      "id": "83250eba-035d-41e9-b51f-b96e4404ca7c",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e9b14e50-8e59-4c46-ae93-2e54f32833db",
+              "leftValue": "={{ $('Wait').item.json.id }}",
+              "rightValue": "={{ $json.id }}",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
               }
-            ]
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -304,
+        0
+      ],
+      "id": "7da1e0a9-e868-4bbe-a3ce-b0874b4e9e8a",
+      "name": "Is this the latest message?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1dc876fb-650e-4656-b19f-6cacbb2f4fa8",
+              "name": "user_id",
+              "value": "={{ $json.contacts[0].user_id || $json.contacts[0].wa_id }}",
+              "type": "string"
+            },
+            {
+              "id": "4015583e-c701-47e5-bd3c-b687a46878c4",
+              "name": "message_type",
+              "value": "={{ $json.messages[0].type }}",
+              "type": "string"
+            },
+            {
+              "id": "bd088009-3a91-4d12-81e8-ec60e539fc5a",
+              "name": "value",
+              "value": "={{ $json.messages[0].text.body }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -1360,
+        -144
+      ],
+      "id": "c68460d6-8d4f-45ce-844a-3267316e33c1",
+      "name": "Text data"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4af44578-de30-4fa4-9130-a24c852aeaa1",
+              "name": "user_id",
+              "value": "={{ $json.contacts[0].user_id || $json.contacts[0].wa_id }}",
+              "type": "string"
+            },
+            {
+              "id": "b16cf22a-b887-4e6b-9608-073d35208f6e",
+              "name": "message_type",
+              "value": "={{ $json.messages[0].type }}",
+              "type": "string"
+            },
+            {
+              "id": "0c715ee9-47b4-43a6-813c-1548209f821d",
+              "name": "value",
+              "value": "={{ $json.messages[0].image.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -1360,
+        0
+      ],
+      "id": "179a31ee-a264-4d54-b7e4-5b5b4b109b4e",
+      "name": "Image data"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c2f04fb1-7bde-49c7-b1d0-1e949a07cae3",
+              "name": "user_id",
+              "value": "={{ $json.contacts[0].user_id || $json.contacts[0].wa_id }}",
+              "type": "string"
+            },
+            {
+              "id": "560f4a5d-3666-4586-9ba1-7f7a8b35aa2b",
+              "name": "message_type",
+              "value": "={{ $json.messages[0].type }}",
+              "type": "string"
+            },
+            {
+              "id": "6ecb7288-9ebf-4839-8261-f76a2ad87b51",
+              "name": "value",
+              "value": "={{ $json.messages[0].audio.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -1360,
+        144
+      ],
+      "id": "706ab1d9-58c9-411e-9d05-64b152d9d291",
+      "name": "Audio data"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1f7c3168-523e-4fd0-b751-2470e5502231",
+              "name": "user_id",
+              "value": "={{ $('Retrieve all saved messages').first().json.user_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        736,
+        -16
+      ],
+      "id": "fb6d02b5-73b1-43fa-a855-1b17bd336ffa",
+      "name": "Retrieve user_id"
+    },
+    {
+      "parameters": {
+        "content": "## How it works:\n***\n\n\n**Learn how this workflow works and how to configure it by checking the README files in my GitHub account**\n\n>English:  https://github.com/chrisullua/n8n-message-buffer/blob/main/readMe.md \n\n>Español: https://github.com/chrisullua/n8n-message-buffer/blob/main/README.es.md\n\n",
+        "height": 208,
+        "width": 784,
+        "color": "#B6B9C3"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        -720
+      ],
+      "id": "be16427f-3ddb-450c-b81f-7cbdb205d599",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# Important\n>Setup: after importing, **create the message_buffer Data Table** and **reselect it in the 4 Data Table nodes**. \nAssign your **WhatsApp credential** in the trigger. \nSee the **README** for details.",
+        "height": 144,
+        "width": 784,
+        "color": "#FF4D4D"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        -496
+      ],
+      "id": "6401fe27-2a05-4c2d-94d2-76c45d7e4bb3",
+      "name": "Sticky Note11"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
           }
-        },
-        "type": "n8n-nodes-base.dataTable",
-        "typeVersion": 1.1,
-        "position": [
-          1072,
-          -112
-        ],
-        "id": "14b883ad-4388-453c-9610-195a49f4a73a",
-        "name": "Recuperar todos los mensajes"
-      },
-      {
-        "parameters": {
-          "operation": "update",
-          "dataTableId": {
-            "__rl": true,
-            "value": "[REDACTED_DATATABLE_ID]",
-            "mode": "list",
-            "cachedResultName": "buffer_mensajes",
-            "cachedResultUrl": "[REDACTED_DATATABLE_URL]"
-          },
-          "filters": {
-            "conditions": [
-              {
-                "keyValue": "={{ $json.id }}"
-              }
-            ]
-          },
-          "columns": {
-            "mappingMode": "defineBelow",
-            "value": {
-              "processed": true
-            },
-            "matchingColumns": [],
-            "schema": [
-              {
-                "id": "user_id",
-                "displayName": "user_id",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "readOnly": false,
-                "removed": false
-              },
-              {
-                "id": "texto_mensaje",
-                "displayName": "texto_mensaje",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "readOnly": false,
-                "removed": false
-              },
-              {
-                "id": "processed",
-                "displayName": "processed",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "boolean",
-                "readOnly": false,
-                "removed": false
-              }
-            ],
-            "attemptToConvertTypes": false,
-            "convertFieldsToString": false
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.dataTable",
-        "typeVersion": 1.1,
-        "position": [
-          1280,
-          -112
-        ],
-        "id": "5e1a6fc0-0672-4573-b637-454291564801",
-        "name": "Validar procesamiento"
-      },
-      {
-        "parameters": {
-          "assignments": {
-            "assignments": [
-              {
-                "id": "73ee2457-b111-42b7-bdef-641263c68329",
-                "name": "=mensaje ",
-                "value": "={{ $json.texto_mensaje }}",
-                "type": "string"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.set",
-        "typeVersion": 3.4,
-        "position": [
-          1488,
-          -112
-        ],
-        "id": "93a8f701-28d4-48b6-89c6-3be21fe540b5",
-        "name": "Extraer mensajes"
-      },
-      {
-        "parameters": {
-          "aggregate": "aggregateAllItemData",
-          "options": {}
-        },
-        "type": "n8n-nodes-base.aggregate",
-        "typeVersion": 1,
-        "position": [
-          1664,
-          -112
-        ],
-        "id": "9cb746c7-7389-4c8b-a6be-506c300a7c47",
-        "name": "Juntar mensajes"
-      }
-    ],
-    "pinData": {},
-    "connections": {
-      "WhatsApp Trigger": {
-        "main": [
-          [
-            {
-              "node": "Guardar mensaje",
-              "type": "main",
-              "index": 0
-            }
-          ]
         ]
-      },
-      "Guardar mensaje": {
-        "main": [
-          [
-            {
-              "node": "Esperar 15'",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Esperar 15'": {
-        "main": [
-          [
-            {
-              "node": "Recuperar ultimo mensaje guardado",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Recuperar ultimo mensaje guardado": {
-        "main": [
-          [
-            {
-              "node": "Es este mensaje el último recibido?",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Es este mensaje el último recibido?": {
-        "main": [
-          [
-            {
-              "node": "Recuperar todos los mensajes",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Recuperar todos los mensajes": {
-        "main": [
-          [
-            {
-              "node": "Validar procesamiento",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Validar procesamiento": {
-        "main": [
-          [
-            {
-              "node": "Extraer mensajes",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Extraer mensajes": {
-        "main": [
-          [
-            {
-              "node": "Juntar mensajes",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      }
+      ]
     },
-    "active": true,
-    "settings": {
-      "executionOrder": "v1",
-      "binaryMode": "separate"
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Text data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Image data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Audio data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
-    "versionId": "[REDACTED_VERSION_ID]",
-    "meta": {
-      "templateCredsSetupCompleted": true,
-      "instanceId": "[REDACTED_INSTANCE_ID]"
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Retrieve last message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
-    "id": "W8GLIWIFmU64kuh3",
-    "tags": []
-  }
+    "Save message": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve last message": {
+      "main": [
+        [
+          {
+            "node": "Is this the latest message?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve all saved messages": {
+      "main": [
+        [
+          {
+            "node": "validate processing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "validate processing": {
+      "main": [
+        [
+          {
+            "node": "Extract messages in buffer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract messages in buffer": {
+      "main": [
+        [
+          {
+            "node": "Unify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is this the latest message?": {
+      "main": [
+        [
+          {
+            "node": "Retrieve all saved messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text data": {
+      "main": [
+        [
+          {
+            "node": "Save message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image data": {
+      "main": [
+        [
+          {
+            "node": "Save message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Audio data": {
+      "main": [
+        [
+          {
+            "node": "Save message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unify": {
+      "main": [
+        [
+          {
+            "node": "Retrieve user_id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "[REDACTED_VERSION_ID]",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "[REDACTED_INSTANCE_ID]"
+  },
+  "nodeGroups": [],
+  "id": "JW0LUWxvzl3s5tRk",
+  "tags": []
+}
