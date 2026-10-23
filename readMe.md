@@ -40,6 +40,8 @@ The result is one clean batch, ready to be passed to the next step of your workf
 9. **Mark as processed** sets `processed = true` on each of them, so they are not processed again.
 10. **Extract messages in buffer** and **Unify** (plus a final Set that adds the `user_id`) build the final output.
 
+**To activate the workflow, your n8n instance must be accessible over HTTPS from the Internet, because Meta verifies the webhook.**
+
 ## Output
 
 The last node outputs a single item:
