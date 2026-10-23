@@ -41,6 +41,8 @@ El resultado es un lote limpio, listo para pasarlo al siguiente paso de tu workf
 9. **Mark as processed** marca cada uno con `processed = true`, para que no se procesen otra vez.
 10. **Extract messages in buffer** y **Unify** (más un Set final que agrega el `user_id`) arman la salida final.
 
+**To activate the workflow, your n8n instance must be accessible over HTTPS from the Internet, because Meta verifies the webhook.**
+
 ## Salida
 
 El último nodo entrega un único item:
