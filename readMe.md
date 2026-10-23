@@ -4,15 +4,13 @@
 
 An n8n workflow that groups consecutive WhatsApp messages from the same user into a single batch before processing them, for example with an AI agent.
 
-![Workflow overview](docs/workflow-overview.png)
-
 ## The problem
 
 In natural conversations, people rarely send one complete message. They send several in a row:
 
 ```
 Hi.
-My name is Patroclo.
+My name is Chris.
 I'd like to ask about...
 ```
 
@@ -51,7 +49,7 @@ The last node outputs a single item:
   "messages_array": [
     { "value": "1677174607261743", "message_type": "audio" },
     { "value": "1772159854070922", "message_type": "image" },
-    { "value": "And this is a message", "message_type": "text" }
+    { "value": "And this is a text message", "message_type": "text" }
   ],
   "user_id": "AR.1054574977234806"
 }
