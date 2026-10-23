@@ -1,6 +1,6 @@
 # WhatsApp Message Buffer
 
-🌐 [English](README.md)
+🌐 [English](readMe.md)
 
 Un workflow de n8n que agrupa los mensajes consecutivos de WhatsApp de un mismo usuario en un único lote antes de procesarlos, por ejemplo con un agente de IA.
 
