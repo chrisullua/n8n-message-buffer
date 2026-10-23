@@ -4,7 +4,6 @@
 
 Un workflow de n8n que agrupa los mensajes consecutivos de WhatsApp de un mismo usuario en un único lote antes de procesarlos, por ejemplo con un agente de IA.
 
-![Vista general del workflow](docs/workflow-overview.png)
 
 ## El problema
 
@@ -12,7 +11,7 @@ En una conversación natural, la gente rara vez envía un único mensaje complet
 
 ```
 Hola.
-Me llamo Patroclo.
+Me llamo Chris.
 Quiero consultar por...
 ```
 
@@ -51,7 +50,7 @@ El último nodo entrega un único item:
   "messages_array": [
     { "value": "1677174607261743", "message_type": "audio" },
     { "value": "1772159854070922", "message_type": "image" },
-    { "value": "Y esto es un mensaje", "message_type": "text" }
+    { "value": "Y esto es un mensaje de texto", "message_type": "text" }
   ],
   "user_id": "AR.1054574977234806"
 }
